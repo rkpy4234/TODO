@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+</head>
+<body>
+  <h2>Welcome, Admin</h2>
+  <p id="userDetails"></p>
+  <button id="logoutButton">Logout</button>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const fullname = params.get('fullname');
+    const username = params.get('username');
+
+    document.getElementById('userDetails').textContent = `Full Name: ${fullname}, Username: ${username}`;
+
+    document.getElementById('logoutButton').addEventListener('click', function() {
+      fetch('https://script.google.com/macros/s/1VuxC4ALNZA6Nj4hTirDECpA_iK1a3XoyvY55ElQ3nrw/exec', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'logout' })
+      }).then(() => {
+        window.location.href = 'login.html';
+      });
+    });
+  </script>
+</body>
+</html>

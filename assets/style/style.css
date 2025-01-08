@@ -1,0 +1,16 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+.error {
+    color: red;
+    text-align: center;
+}
+
+.loading {
+    display: none;
+    text-align: center;
+    color: #333;
+    font-weight: bold;
+}

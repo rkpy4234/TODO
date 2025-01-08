@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Data</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <button id="logout">logout</button>
+        <h2><span id="sheetName"></span></h2>
+        <table class="table table-bordered" id="userDataTable" style="width: 100%; overflow-x: auto;">
+            <thead>
+                <tr style="background-color: rgba(200, 200, 200, 0.5);">
+                    <th>S.N</th>
+                    <th>Heading</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const fullname = params.get('fullname');
+
+        document.getElementById('sheetName').textContent = fullname;
+
+        function fetchUserData(sheetName) {
+            const url = `https://script.google.com/macros/s/AKfycbyp6Zn1nTN794Gi4msy_ZjOuBPEBCGetUR-3GXi5Tq_HtKwotvvv2lLW6EXz72N7Kjs/exec?sheet=${sheetName}`;
+            console.log(`Fetching data from: ${url}`);
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error('Error:', data.error);
+                    } else {
+                        renderTable(data);
+                    }
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        function renderTable(data) {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+
+            if (data.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="4">No data found for the specified sheet.</td></tr>';
+                return;
+            }
+
+            // Start from row 2 (index 1), skip row 1 (header)
+            data.forEach((row, index) => {
+                if (index === 0) return; // Skip row 1 (header row in data)
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+
+                    <td>${row['Column A'] || ''}</td>
+                    <td>${row['Column B'] || ''}</td>
+                    <td>${row['Column C'] || ''}</td>
+                    <td>
+                        <span id="status-${index}">${row['Column D'] || 'No status'}</span>
+                        <button onclick="editStatus(${index}, '${row['Column D']}')" class="btn btn-primary btn-sm">Edit</button>
+                        <button onclick="updateStatus(${index})" style="display: none;" id="updateBtn-${index}" class="btn btn-success btn-sm">Update</button>
+                        <select style="display: none;" id="statusDropdown-${index}">
+                            <option value="Pending">Pending</option>
+                            <option value="Started">Started</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Problems">Problems</option>
+                            <option value="dont know">Problems</option>
+                        </select>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function editStatus(index, currentStatus) {
+            // Show the dropdown and hide the current status
+            document.getElementById(`status-${index}`).style.display = 'none';
+            document.getElementById(`statusDropdown-${index}`).style.display = 'inline';
+            document.getElementById(`updateBtn-${index}`).style.display = 'inline';
+
+            // Set the dropdown value to the current status
+            document.getElementById(`statusDropdown-${index}`).value = currentStatus;
+        }
+
+        function updateStatus(index) {
+            const newStatus = document.getElementById(`statusDropdown-${index}`).value;
+
+            // Update the displayed status
+            document.getElementById(`status-${index}`).textContent = newStatus;
+
+            // Hide the dropdown and Update button
+            document.getElementById(`statusDropdown-${index}`).style.display = 'none';
+            document.getElementById(`updateBtn-${index}`).style.display = 'none';
+            document.getElementById(`status-${index}`).style.display = 'inline';
+
+            // Now, update the status in the Google Sheet
+            const row = index + 1;  // Row index for Google Sheets (starts from row 2)
+            const url = `https://script.google.com/macros/s/AKfycbyp6Zn1nTN794Gi4msy_ZjOuBPEBCGetUR-3GXi5Tq_HtKwotvvv2lLW6EXz72N7Kjs/exec?sheet=${fullname}&row=${row}&status=${newStatus}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error('Error updating data:', data.error);
+                    } else {
+                        console.log('Data updated successfully');
+                    }
+                })
+                .catch(error => console.error('Error updating data:', error));
+        }
+
+        if (fullname) {
+            fetchUserData(fullname);
+        } else {
+            console.error('Fullname not found in URL parameters');
+        }
+    </script>
+</body>
+
+</html>
