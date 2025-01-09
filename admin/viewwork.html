@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Sheet Data</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container-fluid" style="padding-top:30px ;">
+        <div class="container">
+            <div class="row">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>View Records</h1>
+                    <div><button id="backtohome" class="btn btn-sm btn-primary">Back</button></div>
+                </div>
+                
+                <div>
+                    <label for="sheetName">Select Sheet:</label>
+                    <select id="sheetName" name="sheetName" required>
+                        <option>Choose...</option>
+                    </select>
+                    <button id="viewButton" class="btn btn-sm btn-success">View Data</button>
+                </div>
+                <br><br>
+                <table border="1" id="dataTable" class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>S.N</th>
+                            <th>Topic</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="assets/script/view.js"></script>
+</body>
+</html>
